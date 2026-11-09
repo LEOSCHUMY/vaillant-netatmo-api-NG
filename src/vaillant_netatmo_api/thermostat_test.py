@@ -70,7 +70,8 @@ get_thermostats_data_response = {
                                 "selected": True,
                             }
                         ],
-                        "measured": {"temperature": 25, "setpoint_temp": 26, "est_setpoint_temp": 27},
+                        "measured": {"temperature": 25, "setpoint_temp": 26, "est_setpoint_temp": 27, "measurement_time": 1667636447},
+                        "last_update_time": 1667636448,
                     }
                 ]
             }
@@ -179,6 +180,9 @@ class TestThermostat:
 
             assert respx_mock.calls.call_count == 3
             assert len(devices) == len(expected_devices)
+            module = devices[0].modules[0]
+            assert module.measured.extra_fields == {"measurement_time": 1667636447}
+            assert module.extra_fields == {"last_update_time": 1667636448}
             for x in zip(devices, expected_devices):
                 assert x[0] == Device(**x[1])
 

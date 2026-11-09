@@ -538,6 +538,9 @@ class Module:
         self.setpoint_manual = Setpoint(**setpoint_manual)
         self.therm_program_list = [
             Program(**program) for program in therm_program_list]
+        # Keep fields unknown to this library version available to callers.
+        # Firmware/API responses may add measurement metadata (for example timestamps).
+        self.extra_fields = kwargs.copy()
         self.measured = Measured(**measured)
         self.boiler_status = boiler_status
 
@@ -735,6 +738,8 @@ class Measured:
         self.temperature = temperature
         self.setpoint_temp = setpoint_temp
         self.est_setpoint_temp = est_setpoint_temp
+        # Preserve API fields not yet modeled here, including possible timestamps.
+        self.extra_fields = kwargs.copy()
 
 
 class MeasurementItem:

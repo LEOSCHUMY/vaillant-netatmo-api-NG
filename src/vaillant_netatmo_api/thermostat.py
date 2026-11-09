@@ -788,6 +788,7 @@ class Measured:
         temperature: float | None = None,
         setpoint_temp: float | None = None,
         est_setpoint_temp: float | None = None,
+        time: int | None = None,
         **kwargs,
     ) -> None:
         """Create new measured attribute."""
@@ -795,6 +796,7 @@ class Measured:
         self.temperature = temperature
         self.setpoint_temp = setpoint_temp
         self.est_setpoint_temp = est_setpoint_temp
+        self.time = time
 
 
 class MeasurementItem:

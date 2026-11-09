@@ -7,6 +7,7 @@ def test_module_preserves_measured_timestamp():
     timestamp = 1794255738
     device = Device(
         _id="device",
+        system_mode="winter",
         modules=[
             {
                 "_id": "module",

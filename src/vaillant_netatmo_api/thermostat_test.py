@@ -1,4 +1,5 @@
 import httpx
+import logging
 import pytest
 
 from datetime import datetime, timedelta
@@ -398,3 +399,25 @@ class TestThermostat:
                 async_modify_device_param_request["device_id"],
                 async_modify_device_param_request["setpoint_default_duration"],
             )
+
+
+def test_log_response_timestamp_fields_logs_only_timestamp_fields(caplog):
+    """Timestamp diagnostics must not expose device identifiers or names."""
+    from vaillant_netatmo_api.thermostat import _log_response_timestamp_fields
+
+    response_fragment = {
+        "_id": "private-device-id",
+        "module_name": "Private Room Name",
+        "measured": {
+            "temperature": 20.4,
+            "last_update": 1667636447,
+        },
+    }
+
+    with caplog.at_level(logging.DEBUG, logger="vaillant_netatmo_api.thermostat"):
+        _log_response_timestamp_fields(response_fragment, "device[0]")
+
+    assert "device[0].measured.last_update=1667636447" in caplog.text
+    assert "private-device-id" not in caplog.text
+    assert "Private Room Name" not in caplog.text
+    assert "20.4" not in caplog.text

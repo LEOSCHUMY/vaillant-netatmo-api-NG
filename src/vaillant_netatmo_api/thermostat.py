@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 
 from contextlib import asynccontextmanager
 from datetime import datetime, time
@@ -17,6 +18,32 @@ from .errors import NonOkResponseException, UnsuportedArgumentsException
 from .thermostat_auth import ThermostatAuth
 from .time import now
 from .token import Token, TokenStore
+
+_LOGGER = logging.getLogger(__name__)
+_TIMESTAMP_KEY_PARTS = (
+    "time", "date", "timestamp", "updated", "created", "last_seen", "sync"
+)
+
+
+def _log_response_timestamp_fields(value: object, prefix: str) -> None:
+    """Log only timestamp-like fields from a parsed API response.
+
+    The response may contain device identifiers, names, and account metadata;
+    none of those values are logged here.
+    """
+    if isinstance(value, dict):
+        for key, item in value.items():
+            field_path = f"{prefix}.{key}"
+            key_lower = str(key).lower()
+            if any(part in key_lower for part in _TIMESTAMP_KEY_PARTS):
+                if isinstance(item, (str, int, float, bool)) or item is None:
+                    _LOGGER.debug("Vaillant response timestamp candidate: %s=%r", field_path, item)
+            if isinstance(item, (dict, list)):
+                _log_response_timestamp_fields(item, field_path)
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            if isinstance(item, (dict, list)):
+                _log_response_timestamp_fields(item, f"{prefix}[{index}]")
 
 _HOMES_DATA_PATH = "api/homesdata"
 _SET_HOME_DATA = "api/sethomedata"
@@ -240,7 +267,40 @@ class ThermostatClient(BaseClient):
                 "Unknown response error. Check the log for more details.", path=path, data=data, body=body
             )
 
-        return [Device(**device) for device in body["body"]["devices"]]
+        raw_devices = body["body"]["devices"]
+
+        # Inspect the response shape without logging names, IDs, tokens, or the
+        # full payload. Timestamp-like values are useful to determine whether
+        # the API exposes the acquisition/update time for each measurement.
+        for device_index, raw_device in enumerate(raw_devices):
+            if isinstance(raw_device, dict):
+                _LOGGER.debug(
+                    "Vaillant getthermostatsdata device[%d] fields: %s",
+                    device_index,
+                    sorted(str(key) for key in raw_device),
+                )
+                _log_response_timestamp_fields(raw_device, f"device[{device_index}]")
+                modules = raw_device.get("modules", [])
+                if isinstance(modules, list):
+                    for module_index, raw_module in enumerate(modules):
+                        if not isinstance(raw_module, dict):
+                            continue
+                        _LOGGER.debug(
+                            "Vaillant getthermostatsdata device[%d].module[%d] fields: %s",
+                            device_index,
+                            module_index,
+                            sorted(str(key) for key in raw_module),
+                        )
+                        measured = raw_module.get("measured")
+                        if isinstance(measured, dict):
+                            _LOGGER.debug(
+                                "Vaillant getthermostatsdata device[%d].module[%d].measured fields: %s",
+                                device_index,
+                                module_index,
+                                sorted(str(key) for key in measured),
+                            )
+
+        return [Device(**device) for device in raw_devices]
 
     async def async_get_measure(
         self,

@@ -13,6 +13,7 @@ from typing import AsyncGenerator, Callable
 from httpx import AsyncClient
 
 from .home import Home, Room, ThermMode, TemperatureControlMode, ThermSetpointMode
+from .homestatus import RoomStatus, parse_home_status
 from .base import BaseClient
 from .errors import NonOkResponseException, UnsuportedArgumentsException
 from .thermostat_auth import ThermostatAuth
@@ -46,6 +47,8 @@ def _log_response_timestamp_fields(value: object, prefix: str) -> None:
                 _log_response_timestamp_fields(item, f"{prefix}[{index}]")
 
 _HOMES_DATA_PATH = "api/homesdata"
+_HOME_STATUS_PATH = "syncapi/v1/homestatus"
+_VAILLANT_APP_VERSION = "2.4.5.0"
 _SET_HOME_DATA = "api/sethomedata"
 _SET_STATE = "syncapi/v1/setstate"
 
@@ -127,6 +130,27 @@ class ThermostatClient(BaseClient):
             )
 
         return [Home(**home) for home in body["body"]["homes"]]
+
+    async def async_get_home_status(self, home_id: str) -> dict[str, RoomStatus]:
+        """Fetch current temperatures indexed by stable room ID.
+
+        The sync API sometimes returns repeated room records. Identical
+        duplicates are collapsed; conflicting duplicates are rejected.
+        Unlike getthermostatsdata, this endpoint provides no measurement
+        timestamp, so callers must not infer one from the request time.
+        """
+        if not isinstance(home_id, str) or not home_id:
+            raise ValueError("home_id must be a non-empty string")
+
+        response = await self._post(
+            _HOME_STATUS_PATH,
+            json={
+                "home_id": home_id,
+                "app_type": _VAILLANT_APP_ID,
+                "app_version": _VAILLANT_APP_VERSION,
+            },
+        )
+        return parse_home_status(response)
 
     async def async_set_home_data(
         self,

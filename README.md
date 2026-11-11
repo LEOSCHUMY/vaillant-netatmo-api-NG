@@ -6,7 +6,7 @@
 
 **vaillant-netatmo-api-ng** is a community-maintained fork of [Mislav Mandarić's vaillant-netatmo-api](https://github.com/MislavMandaric/vaillant-netatmo-api), a Python library for accessing Vaillant vSMART/eRELAX thermostats through Netatmo-backed APIs.
 
-This fork starts its **own version series at 0.1.0**. Version numbers do **not** track the original project's releases. The initial NG work adds read-only room temperatures from Vaillant's `homestatus` endpoint, without replacing existing thermostat data or control APIs.
+This fork starts its **own version series at 0.1.0**. Version numbers do **not** track the original project's releases. NG adds read-only room temperatures and, since `0.1.1`, module boiler status from Vaillant's `homestatus` endpoint, while preserving the existing thermostat data and control APIs.
 
 > [!IMPORTANT]
 > **Independent, unofficial project — NOT affiliated with, authorized, sponsored, or endorsed by Vaillant or Netatmo.**
@@ -18,20 +18,20 @@ This fork is also independent of the original project's maintainer. See [LICENSE
 
 - Existing authenticated thermostat data access and heating controls from the upstream library.
 - `ThermostatClient.async_get_homes_data()` for homes, rooms and `Room.module_ids`.
-- **NEW:** `ThermostatClient.async_get_home_status(home_id)` for room status (including measured temperature, target temperature and reachability) keyed by room ID.
-- New in `0.1.1` (pending publication): `ThermostatClient.async_get_home_status_snapshot(home_id)` returns a `HomeStatus` with `rooms` and `boiler_statuses` from one request. Boiler readings are keyed by module ID, including explicit `False`; missing, invalid, unreachable or conflicting duplicate readings are omitted. Consumers should match module IDs against their home topology and retain a legacy fallback. The room-only method remains compatible.
+- `ThermostatClient.async_get_home_status(home_id)` for room status (including measured temperature, target temperature and reachability) keyed by room ID.
+- Available since `0.1.1`: `ThermostatClient.async_get_home_status_snapshot(home_id)` returns a `HomeStatus` with `rooms` and `boiler_statuses` from one request. Boiler readings are keyed by module ID, including explicit `False`; missing, invalid, unreachable or conflicting duplicate readings are omitted. Consumers should match module IDs against their home topology and retain a legacy fallback. The room-only method remains compatible.
 - Defensive validation for malformed responses and duplicate or conflicting room records.
 - No fabricated measurement timestamp: the `homestatus` response does not provide a verified temperature acquisition time.
 
 ## Installation
 
-The NG package is published on [PyPI](https://pypi.org/project/vaillant-netatmo-api-ng/0.1.0/) and can be installed with:
+The NG package is published on [PyPI](https://pypi.org/project/vaillant-netatmo-api-ng/0.1.1/) and can be installed with:
 
 ```bash
-pip install vaillant-netatmo-api-ng==0.1.0
+pip install vaillant-netatmo-api-ng==0.1.1
 ```
 
-**Latest release:** [v0.1.0 on GitHub](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/releases/tag/v0.1.0) · [v0.1.0 on PyPI](https://pypi.org/project/vaillant-netatmo-api-ng/0.1.0/).
+**Latest release:** [v0.1.1 on GitHub](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/releases/tag/v0.1.1) · [v0.1.1 on PyPI](https://pypi.org/project/vaillant-netatmo-api-ng/0.1.1/).
 
 The **distribution name** is `vaillant-netatmo-api-ng`, but the Python **import name** intentionally remains `vaillant_netatmo_api` for compatibility:
 
@@ -63,18 +63,21 @@ Use `homesdata` `rooms[].module_ids` to map room readings to the right thermosta
 
 ### Reading room temperatures and boiler state together (0.1.1)
 
-Version `0.1.1` is being prepared and is not yet published. With that version,
-one request provides both types of reading:
+In `0.1.1` and later, one request provides both types of reading:
 
 ```python
-snapshot = await client.async_get_home_status_snapshot(home.id)
-for room in home.rooms:
-    room_status = snapshot.rooms.get(room.id)
-    for module_id in room.module_ids:
-        boiler_status = snapshot.boiler_statuses.get(module_id)
-        if boiler_status is not None:
-            # Both True and False are authoritative booleans for this snapshot.
-            print(boiler_status)
+homes = await client.async_get_homes_data()
+for home in homes:
+    snapshot = await client.async_get_home_status_snapshot(home.id)
+    for room in home.rooms:
+        room_status = snapshot.rooms.get(room.id)
+        if room_status is not None:
+            print(room_status.measured_temperature)
+        for module_id in room.module_ids:
+            boiler_status = snapshot.boiler_statuses.get(module_id)
+            if boiler_status is not None:
+                # Both True and False are valid readings for this snapshot.
+                print(boiler_status)
 ```
 
 Keep a legacy fallback for absent readings; do not use truthiness to decide

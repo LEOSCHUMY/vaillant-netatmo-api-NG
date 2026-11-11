@@ -24,13 +24,13 @@ This fork is also independent of the original project's maintainer. See [LICENSE
 
 ## Installation
 
-Once published on PyPI, the NG package can be installed with:
+The NG package is published on [PyPI](https://pypi.org/project/vaillant-netatmo-api-ng/0.1.0/) and can be installed with:
 
 ```bash
 pip install vaillant-netatmo-api-ng==0.1.0
 ```
 
-**Publication status:** Version 0.1.0 is prepared in this repository but is **not yet confirmed as published on PyPI**. Until release, use the [source repository](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG) and a branch/commit-specific installation for development.
+**Latest release:** [v0.1.0 on GitHub](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/releases/tag/v0.1.0) · [v0.1.0 on PyPI](https://pypi.org/project/vaillant-netatmo-api-ng/0.1.0/).
 
 The **distribution name** is `vaillant-netatmo-api-ng`, but the Python **import name** intentionally remains `vaillant_netatmo_api` for compatibility:
 

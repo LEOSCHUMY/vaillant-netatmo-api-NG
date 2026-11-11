@@ -13,7 +13,7 @@ from typing import AsyncGenerator, Callable
 from httpx import AsyncClient
 
 from .home import Home, Room, ThermMode, TemperatureControlMode, ThermSetpointMode
-from .homestatus import RoomStatus, parse_home_status
+from .homestatus import HomeStatus, RoomStatus, parse_home_status, parse_home_status_snapshot
 from .base import BaseClient
 from .errors import NonOkResponseException, UnsuportedArgumentsException
 from .thermostat_auth import ThermostatAuth
@@ -139,10 +139,24 @@ class ThermostatClient(BaseClient):
         Unlike getthermostatsdata, this endpoint provides no measurement
         timestamp, so callers must not infer one from the request time.
         """
+        return parse_home_status(await self._async_get_home_status_response(home_id))
+
+    async def async_get_home_status_snapshot(self, home_id: str) -> HomeStatus:
+        """Fetch rooms and module boiler states in a single uncached request.
+
+        Unknown or ambiguous module states are omitted, never converted to
+        False. The existing async_get_home_status room-only API is unchanged.
+        No acquisition timestamp or bound on server-side latency is inferred.
+        """
+        response = await self._async_get_home_status_response(home_id)
+        return parse_home_status_snapshot(response, home_id)
+
+    async def _async_get_home_status_response(self, home_id: str) -> dict:
+        """Request the raw home status without logging its payload."""
         if not isinstance(home_id, str) or not home_id:
             raise ValueError("home_id must be a non-empty string")
 
-        response = await self._post(
+        return await self._post(
             _HOME_STATUS_PATH,
             json={
                 "home_id": home_id,
@@ -150,7 +164,6 @@ class ThermostatClient(BaseClient):
                 "app_version": _VAILLANT_APP_VERSION,
             },
         )
-        return parse_home_status(response)
 
     async def async_set_home_data(
         self,

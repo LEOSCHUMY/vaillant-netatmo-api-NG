@@ -28,6 +28,57 @@ class InvalidHomeStatusResponse(ValueError):
     """Raised when home status cannot be mapped unambiguously."""
 
 
+@dataclass(frozen=True)
+class HomeStatus:
+    """Room and module readings from one homestatus response, without caching."""
+
+    rooms: dict[str, RoomStatus]
+    boiler_statuses: dict[str, bool]
+
+
+def parse_home_status_snapshot(response: dict, expected_home_id: str) -> HomeStatus:
+    """Parse a home snapshot, retaining valid module boiler booleans by stable ID.
+
+    Bad module data is omitted independently of room temperatures. Identical
+    boiler readings for a repeated ID are collapsed. A conflicting, missing,
+    invalid or unreachable duplicate rejects that ID for this response.
+    """
+    rooms = parse_home_status(response)
+    body = response["body"]
+    home = body.get("home")
+    if not isinstance(home, dict):
+        home = body["data"]["home"]
+    if (
+        not isinstance(expected_home_id, str)
+        or not expected_home_id
+        or home.get("id") != expected_home_id
+    ):
+        raise InvalidHomeStatusResponse("Home status does not match requested home")
+
+    modules = home.get("modules")
+    if not isinstance(modules, list):
+        return HomeStatus(rooms, {})
+    readings: dict[str, bool] = {}
+    rejected: set[str] = set()
+    for record in modules:
+        if not isinstance(record, dict):
+            continue
+        module_id = record.get("id")
+        if not isinstance(module_id, str) or not module_id or module_id in rejected:
+            continue
+        value = record.get("boiler_status")
+        if (
+            type(value) is not bool
+            or record.get("reachable", True) is not True
+            or (module_id in readings and readings[module_id] != value)
+        ):
+            readings.pop(module_id, None)
+            rejected.add(module_id)
+            continue
+        readings[module_id] = value
+    return HomeStatus(rooms, readings)
+
+
 def parse_home_status(response: dict) -> dict[str, RoomStatus]:
     """Return one status per distinct room ID from a successful API response.
 

@@ -5,13 +5,16 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "vaillant-netatmo-api"
-version = "0.13.1"
+name = "vaillant-netatmo-api-ng"
+version = "0.1.0"
 authors = [
     { name="Mislav Mandaric" },
 ]
-description = "Python 3 library for managing Vaillant thermostats using the Netatmo API."
+description = "Community fork for managing Vaillant thermostats using Netatmo-backed APIs."
 readme = "README.md"
+maintainers = [
+    { name="LEOSCHUMY" },
+]
 requires-python = ">=3.8"
 dependencies = [
     "httpx>=0.18.2",
@@ -24,8 +27,10 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/MislavMandaric/vaillant-netatmo-api"
-Issues = "https://github.com/MislavMandaric/vaillant-netatmo-api/issues"
+Homepage = "https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG"
+Source = "https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG"
+Issues = "https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/issues"
+Changelog = "https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/blob/master/CHANGELOG.md"
 
 [tool.semantic_release]
 version_toml = ["pyproject.toml:project.version"]

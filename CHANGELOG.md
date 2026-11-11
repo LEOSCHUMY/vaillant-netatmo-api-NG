@@ -4,9 +4,9 @@
 
 No changes yet.
 
-## 0.1.1 — Module boiler status snapshots
+## [v0.1.1](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/releases/tag/v0.1.1) — Module boiler status snapshots (2026-11-11)
 
-Release preparation; publication is a separate manual step.
+Published on [PyPI](https://pypi.org/project/vaillant-netatmo-api-ng/0.1.1/).
 
 ### Added
 

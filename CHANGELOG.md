@@ -1,3 +1,22 @@
+## [Unreleased] — NG homestatus support (2026-11-11)
+
+### Added
+
+- Add `ThermostatClient.async_get_home_status(home_id)` using Vaillant's `POST syncapi/v1/homestatus` endpoint with the existing authentication flow.
+- Expose room status by stable room ID, including measured temperature, setpoint and reachability; retain `homesdata` `Room.module_ids` for room-to-thermostat matching.
+- Add regression tests for multiple rooms, duplicate records, invalid response data, missing temperatures and request parameters.
+
+### Reliability and diagnostics
+
+- Deduplicate identical room records and reject conflicting records or invalid temperatures rather than selecting an uncertain reading.
+- Do not fabricate a measurement timestamp: `homestatus` does not provide a verified acquisition timestamp.
+- Preserve existing `getthermostatsdata` behavior and diagnostic logging; no API changes for boiler commands.
+- Avoid exposing account identifiers, credentials or full API payloads in new diagnostics.
+
+### Validation
+
+- Confirmed with the companion Home Assistant integration on a Vaillant eRELAX/vSMART device (2026-11-10 to 2026-11-11); see integration PR #11 for end-to-end observations.
+
 # CHANGELOG
 
 

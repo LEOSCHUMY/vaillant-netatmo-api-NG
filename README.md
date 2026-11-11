@@ -19,6 +19,7 @@ This fork is also independent of the original project's maintainer. See [LICENSE
 - Existing authenticated thermostat data access and heating controls from the upstream library.
 - `ThermostatClient.async_get_homes_data()` for homes, rooms and `Room.module_ids`.
 - **NEW:** `ThermostatClient.async_get_home_status(home_id)` for room status (including measured temperature, target temperature and reachability) keyed by room ID.
+- Development: `ThermostatClient.async_get_home_status_snapshot(home_id)` returns a `HomeStatus` with `rooms` and `boiler_statuses` from one request. Boiler readings are keyed by module ID, including explicit `False`; missing, invalid, unreachable or conflicting duplicate readings are omitted. Consumers should match module IDs against their home topology and retain a legacy fallback. The room-only method remains compatible.
 - Defensive validation for malformed responses and duplicate or conflicting room records.
 - No fabricated measurement timestamp: the `homestatus` response does not provide a verified temperature acquisition time.
 

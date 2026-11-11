@@ -22,6 +22,7 @@ from .home import (
     ThermMode,
     ThermSetpointMode,
 )
+from .homestatus import HomeStatus, RoomStatus
 from .thermostat import (
     Device,
     Measured,
@@ -56,6 +57,8 @@ __all__ = [
     "RetryableException",
     "UnsuportedArgumentsException",
     "Home",
+    "HomeStatus",
+    "RoomStatus",
     "Room",
     "TemperatureControlMode",
     "ThermMode",

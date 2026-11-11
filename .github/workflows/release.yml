@@ -1,8 +1,7 @@
 name: release
 
 on:
-  push:
-    branches: [ master ]
+  workflow_dispatch:  # Manual only: do not publish automatically on merge to master.
 
 jobs:
   test:

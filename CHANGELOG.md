@@ -1,4 +1,12 @@
-## [Unreleased] — NG v0.1.0 preparation (2026-11-11)
+# Changelog
+
+## [Unreleased]
+
+No changes yet.
+
+## [v0.1.0](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/releases/tag/v0.1.0) — First NG release (2026-11-11)
+
+Published on [PyPI](https://pypi.org/project/vaillant-netatmo-api-ng/0.1.0/). This is the first release in the fork's independent version series.
 
 ### Packaging
 
@@ -26,8 +34,11 @@
 
 - Confirmed with the companion Home Assistant integration on a Vaillant eRELAX/vSMART device (2026-11-10 to 2026-11-11); see integration PR #11 for end-to-end observations.
 
-# CHANGELOG
+---
 
+## Upstream release history (Mislav Mandarić's original project)
+
+The following versions belong to the original `vaillant-netatmo-api` project and do not represent NG releases.
 
 ## v0.13.1 (2025-08-01)
 

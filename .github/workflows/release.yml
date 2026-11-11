@@ -7,7 +7,7 @@ on:
       version:
         description: "Expected package version in pyproject.toml"
         required: true
-        default: "0.1.0"
+        default: "0.1.1"
         type: string
       publish_to_pypi:
         description: "Publish to PyPI (only on master; default is build-only)"

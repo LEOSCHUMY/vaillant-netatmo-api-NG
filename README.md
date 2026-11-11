@@ -8,7 +8,11 @@
 
 This fork starts its **own version series at 0.1.0**. Version numbers do **not** track the original project's releases. The initial NG work adds read-only room temperatures from Vaillant's `homestatus` endpoint, without replacing existing thermostat data or control APIs.
 
-This project is independent of and not endorsed by Vaillant, Netatmo or the original project's maintainer. API endpoints can change without notice. See [LICENSE](LICENSE) for the MIT license and original copyright notice.
+> [!IMPORTANT]
+> **Independent, unofficial project — NOT affiliated with, authorized, sponsored, or endorsed by Vaillant or Netatmo.**
+> This community fork is not an official Vaillant or Netatmo product, and neither company provides support for it. Their APIs may change or become unavailable without notice.
+
+This fork is also independent of the original project's maintainer. See [LICENSE](LICENSE) for the MIT license and original copyright notice.
 
 ## Features
 
@@ -171,4 +175,4 @@ They laid out the foundation by exploring and documenting the APIs.
 
 ## Disclaimers
 
-This library is not associated with Vaillant or Netatmo in any way. If either Vaillant or Netatmo decide to change anything with the API, or block the usage outside of their first party apps, this library will stop working.
+**This is an unofficial, independent community project. It is not affiliated with, authorized, sponsored, or endorsed by Vaillant or Netatmo.** The project is provided without warranties or official support. Changes to either company's APIs, including restrictions on third-party access, may cause some or all features to stop working.

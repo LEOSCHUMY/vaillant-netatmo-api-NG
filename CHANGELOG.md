@@ -2,11 +2,15 @@
 
 ## [Unreleased]
 
+No changes yet.
+
+## 0.1.1 — Module boiler status snapshots
+
+Release preparation; publication is a separate manual step.
+
 ### Added
 
 - Add `async_get_home_status_snapshot(home_id)` returning room readings and module `boiler_status` booleans from one response. Validate the requested home ID, collapse concordant duplicate module readings, and omit unavailable or ambiguous module states without fabricating `False`. Preserve the existing room-only API and avoid caching previous readings. Observed vSMART transitions were available here before the legacy endpoint; no general latency guarantee is implied.
-
-No changes yet.
 
 ## [v0.1.0](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/releases/tag/v0.1.0) — First NG release (2026-11-11)
 

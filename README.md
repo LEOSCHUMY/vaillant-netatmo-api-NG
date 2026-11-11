@@ -19,7 +19,7 @@ This fork is also independent of the original project's maintainer. See [LICENSE
 - Existing authenticated thermostat data access and heating controls from the upstream library.
 - `ThermostatClient.async_get_homes_data()` for homes, rooms and `Room.module_ids`.
 - **NEW:** `ThermostatClient.async_get_home_status(home_id)` for room status (including measured temperature, target temperature and reachability) keyed by room ID.
-- Development: `ThermostatClient.async_get_home_status_snapshot(home_id)` returns a `HomeStatus` with `rooms` and `boiler_statuses` from one request. Boiler readings are keyed by module ID, including explicit `False`; missing, invalid, unreachable or conflicting duplicate readings are omitted. Consumers should match module IDs against their home topology and retain a legacy fallback. The room-only method remains compatible.
+- New in `0.1.1` (pending publication): `ThermostatClient.async_get_home_status_snapshot(home_id)` returns a `HomeStatus` with `rooms` and `boiler_statuses` from one request. Boiler readings are keyed by module ID, including explicit `False`; missing, invalid, unreachable or conflicting duplicate readings are omitted. Consumers should match module IDs against their home topology and retain a legacy fallback. The room-only method remains compatible.
 - Defensive validation for malformed responses and duplicate or conflicting room records.
 - No fabricated measurement timestamp: the `homestatus` response does not provide a verified temperature acquisition time.
 
@@ -60,6 +60,27 @@ for home in homes:
 ```
 
 Use `homesdata` `rooms[].module_ids` to map room readings to the right thermostat module; do not assume the first room represents every thermostat. If `homestatus` cannot provide a valid room reading, applications should retain their previous measured-temperature fallback. This library does not change polling intervals for consumers.
+
+### Reading room temperatures and boiler state together (0.1.1)
+
+Version `0.1.1` is being prepared and is not yet published. With that version,
+one request provides both types of reading:
+
+```python
+snapshot = await client.async_get_home_status_snapshot(home.id)
+for room in home.rooms:
+    room_status = snapshot.rooms.get(room.id)
+    for module_id in room.module_ids:
+        boiler_status = snapshot.boiler_statuses.get(module_id)
+        if boiler_status is not None:
+            # Both True and False are authoritative booleans for this snapshot.
+            print(boiler_status)
+```
+
+Keep a legacy fallback for absent readings; do not use truthiness to decide
+whether a boolean is available. Match module IDs within the requested home's
+topology. Each snapshot is uncached, but the API's server-side update latency
+is not guaranteed and no measurement timestamp is inferred.
 
 ### Existing authentication and thermostat operations
 

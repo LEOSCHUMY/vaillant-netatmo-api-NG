@@ -1,4 +1,11 @@
-## [Unreleased] — NG homestatus support (2026-11-11)
+## [Unreleased] — NG v0.1.0 preparation (2026-11-11)
+
+### Packaging
+
+- Start independent NG release numbering at `0.1.0` under the `vaillant-netatmo-api-ng` distribution name while retaining Python imports from `vaillant_netatmo_api`.
+- Update the fork's README, project metadata, repository URLs and MIT attribution; require an explicit manual release trigger to avoid accidental upstream-style publication.
+
+### Homestatus support
 
 ### Added
 

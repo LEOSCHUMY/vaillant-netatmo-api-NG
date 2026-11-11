@@ -4,6 +4,8 @@
 
 - Start independent NG release numbering at `0.1.0` under the `vaillant-netatmo-api-ng` distribution name while retaining Python imports from `vaillant_netatmo_api`.
 - Update the fork's README, project metadata, repository URLs and MIT attribution; require an explicit manual release trigger to avoid accidental upstream-style publication.
+- Replace the inherited semantic-release upload job with a manual, version-checked PyPI Trusted Publishing workflow. The default manual run is build-only; publication is restricted to `master` and requires an explicit publish flag.
+- Validate source and wheel distributions with `python -m build` and `twine check` in pull-request CI.
 
 ### Homestatus support
 

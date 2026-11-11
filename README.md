@@ -1,29 +1,62 @@
-# vaillant-netatmo-api
+# vaillant-netatmo-api-ng
 
-[![GitHub version](https://badge.fury.io/gh/MislavMandaric%2Fvaillant-netatmo-api.svg)](https://badge.fury.io/gh/MislavMandaric%2Fvaillant-netatmo-api)
-[![PyPI version](https://badge.fury.io/py/vaillant-netatmo-api.svg)](https://badge.fury.io/py/vaillant-netatmo-api)
-![Tests](https://github.com/MislavMandaric/vaillant-netatmo-api/actions/workflows/tests.yml/badge.svg)
+[![Tests](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/actions/workflows/tests.yml/badge.svg)](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/actions/workflows/tests.yml)
 
+## About this fork
 
-## General
+**vaillant-netatmo-api-ng** is a community-maintained fork of [Mislav Mandarić's vaillant-netatmo-api](https://github.com/MislavMandaric/vaillant-netatmo-api), a Python library for accessing Vaillant vSMART/eRELAX thermostats through Netatmo-backed APIs.
 
-Python 3 library for managing Vaillant thermostats using the Netatmo API. It provides one-to-one mapping with Vaillant's Netatmo API and offeres similar functionality as the official Vaillant vSMART/eRELAX app.
+This fork starts its **own version series at 0.1.0**. Version numbers do **not** track the original project's releases. The initial NG work adds read-only room temperatures from Vaillant's `homestatus` endpoint, without replacing existing thermostat data or control APIs.
 
-> NOTE: This library is still in a prerelease status and will be until v1.0.0. There might be breaking changes to the public API in any of the v0.x.y versions.
+This project is independent of and not endorsed by Vaillant, Netatmo or the original project's maintainer. API endpoints can change without notice. See [LICENSE](LICENSE) for the MIT license and original copyright notice.
+
+## Features
+
+- Existing authenticated thermostat data access and heating controls from the upstream library.
+- `ThermostatClient.async_get_homes_data()` for homes, rooms and `Room.module_ids`.
+- **NEW:** `ThermostatClient.async_get_home_status(home_id)` for room status (including measured temperature, target temperature and reachability) keyed by room ID.
+- Defensive validation for malformed responses and duplicate or conflicting room records.
+- No fabricated measurement timestamp: the `homestatus` response does not provide a verified temperature acquisition time.
 
 ## Installation
 
-Library can be simply installed using pip.
+Once published on PyPI, the NG package can be installed with:
 
 ```bash
-pip install vaillant-netatmo-api
+pip install vaillant-netatmo-api-ng==0.1.0
 ```
 
-Library requires Python 3 and has [tenacity](https://github.com/jd/tenacity) and [httpx](https://github.com/encode/httpx) dependencies.
+**Publication status:** Version 0.1.0 is prepared in this repository but is **not yet confirmed as published on PyPI**. Until release, use the [source repository](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG) and a branch/commit-specific installation for development.
 
-> NOTE: httpx is currently a prerelease software. The version outlined in the `requirements.txt` should be working properly, but if there are some breaking changes, please check their Github issue tracker for known issues.
+The **distribution name** is `vaillant-netatmo-api-ng`, but the Python **import name** intentionally remains `vaillant_netatmo_api` for compatibility:
 
-## Usage
+```python
+from vaillant_netatmo_api.thermostat import ThermostatClient
+```
+
+Do not install `vaillant-netatmo-api` and `vaillant-netatmo-api-ng` in the same environment; they provide the same import package and may overwrite each other's files.
+
+Requires Python 3.8+ and the `httpx` and `tenacity` dependencies.
+
+## API usage
+
+### Reading room temperatures
+
+With an existing authenticated `ThermostatClient` instance:
+
+```python
+homes = await client.async_get_homes_data()
+for home in homes:
+    statuses = await client.async_get_home_status(home.id)
+    for room in home.rooms:
+        room_status = statuses.get(room.id)
+        if room_status is not None:
+            print(room_status.measured_temperature)
+```
+
+Use `homesdata` `rooms[].module_ids` to map room readings to the right thermostat module; do not assume the first room represents every thermostat. If `homestatus` cannot provide a valid room reading, applications should retain their previous measured-temperature fallback. This library does not change polling intervals for consumers.
+
+### Existing authentication and thermostat operations
 
 ### Getting the token from the OAuth API
 
@@ -54,7 +87,7 @@ async with auth_client(CLIENT_ID, CLIENT_SECRET, handle_token_update) as client:
 
 ### Accessing the Thermostat API
 
-There are three APIs available for the `ThermostatClient`, all of which require the bearer token for authentication:
+The existing `ThermostatClient` methods include:
 
 * `async_get_thermostats_data`: getting all the devices associated with the user account
 * `async_set_system_mode`: changing system mode for a device and module (ie. summer, winter or frostguard)
@@ -122,6 +155,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 Similar hooks which represent some kind of application context should be used when integrating this library into a different application (Flask, Django or similar).
 
 ## Acknowledgements
+
+The original library was created by **Mislav Mandarić**, who retains the original copyright and attribution. This NG fork builds on that work and preserves its MIT license.
+
 
 This library would not exist if it weren't for previous implementations by the following projects:
 

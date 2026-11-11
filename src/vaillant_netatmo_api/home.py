@@ -36,11 +36,13 @@ class Room:
     def __init__(
         self,
         id: str | None = None,
+        module_ids: list[str] | None = None,
         **kwargs,
     ) -> None:
         """Create new room model."""
 
         self.id = id
+        self.module_ids = module_ids if module_ids is not None else []
 
     def __eq__(self, other: Room):
         if not isinstance(other, Room):

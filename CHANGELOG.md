@@ -1,3 +1,31 @@
+## [Unreleased] — NG v0.1.0 preparation (2026-11-11)
+
+### Packaging
+
+- Start independent NG release numbering at `0.1.0` under the `vaillant-netatmo-api-ng` distribution name while retaining Python imports from `vaillant_netatmo_api`.
+- Update the fork's README, project metadata, repository URLs and MIT attribution; require an explicit manual release trigger to avoid accidental upstream-style publication.
+- Replace the inherited semantic-release upload job with a manual, version-checked PyPI Trusted Publishing workflow. The default manual run is build-only; publication is restricted to `master` and requires an explicit publish flag.
+- Validate source and wheel distributions with `python -m build` and `twine check` in pull-request CI.
+
+### Homestatus support
+
+### Added
+
+- Add `ThermostatClient.async_get_home_status(home_id)` using Vaillant's `POST syncapi/v1/homestatus` endpoint with the existing authentication flow.
+- Expose room status by stable room ID, including measured temperature, setpoint and reachability; retain `homesdata` `Room.module_ids` for room-to-thermostat matching.
+- Add regression tests for multiple rooms, duplicate records, invalid response data, missing temperatures and request parameters.
+
+### Reliability and diagnostics
+
+- Deduplicate identical room records and reject conflicting records or invalid temperatures rather than selecting an uncertain reading.
+- Do not fabricate a measurement timestamp: `homestatus` does not provide a verified acquisition timestamp.
+- Preserve existing `getthermostatsdata` behavior and diagnostic logging; no API changes for boiler commands.
+- Avoid exposing account identifiers, credentials or full API payloads in new diagnostics.
+
+### Validation
+
+- Confirmed with the companion Home Assistant integration on a Vaillant eRELAX/vSMART device (2026-11-10 to 2026-11-11); see integration PR #11 for end-to-end observations.
+
 # CHANGELOG
 
 

@@ -1,68 +1,82 @@
 name: release
 
+# Never publish on push, merge, or tag creation.
 on:
-  push:
-    branches: [ master ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Expected package version in pyproject.toml"
+        required: true
+        default: "0.1.0"
+        type: string
+      publish_to_pypi:
+        description: "Publish to PyPI (only on master; default is build-only)"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
 
 jobs:
-  test:
-
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: [3.8, 3.9]
-
+  build:
+    name: Validate and build distribution
+    runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v3.1.0
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements-test.txt
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        pytest
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify package identity, version and publish branch
+        env:
+          EXPECTED_VERSION: ${{ inputs.version }}
+          PUBLISH_TO_PYPI: ${{ inputs.publish_to_pypi }}
+        run: |
+          python - <<'PY'
+          import os
+          import pathlib
+          import tomllib
 
-  release:
-    needs: test
+          project = tomllib.loads(pathlib.Path("pyproject.toml").read_text())["project"]
+          assert project["name"] == "vaillant-netatmo-api-ng", "Unexpected package name"
+          assert project["version"] == os.environ["EXPECTED_VERSION"], "Unexpected package version"
+          if os.environ["PUBLISH_TO_PYPI"] == "true":
+              assert os.environ["GITHUB_REF"] == "refs/heads/master", (
+                  "Publishing is allowed only from master"
+              )
+          print(f"Validated {project['name']}=={project['version']}")
+          PY
+      - name: Install build and validation tools
+        run: python -m pip install --upgrade build twine
+      - name: Build source and wheel distributions
+        run: python -m build
+      - name: Verify distribution metadata
+        run: python -m twine check dist/*
+      - name: Upload checked distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+          if-no-files-found: error
 
-    runs-on: ubuntu-latest
-    concurrency: release
+  publish:
+    name: Publish approved release to PyPI
+    needs: build
+    if: ${{ inputs.publish_to_pypi && github.ref == 'refs/heads/master' }}
+    runs-on: ubuntu-24.04
     environment:
       name: release
+      url: https://pypi.org/project/vaillant-netatmo-api-ng/
     permissions:
       id-token: write
-      contents: write
-
+      contents: read
     steps:
-    - name: Setup | Checkout Repository at workflow sha
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Action | Semantic Version Release
-      id: release
-      uses: python-semantic-release/python-semantic-release@v9.12.0
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Publish | Upload package to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      if: steps.release.outputs.released == 'true'
-
-    - name: Publish | Upload to GitHub Release Assets
-      uses: python-semantic-release/publish-action@v9.8.9
-      if: steps.release.outputs.released == 'true'
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        tag: ${{ steps.release.outputs.tag }}
+      - name: Download validated distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+      - name: Publish via PyPI Trusted Publishing
+        uses: pypa/gh-action-pypi-publish@release/v1

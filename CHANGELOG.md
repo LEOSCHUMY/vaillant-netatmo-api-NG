@@ -2,7 +2,16 @@
 
 ## [Unreleased]
 
-No changes yet.
+### Compatibility
+
+- Require Python 3.11+ for the next library release, dropping end-of-life Python 3.8-3.10. Published 0.1.1 is unchanged. Supported Home Assistant installations (minimum HA 2024.5 / Python 3.12) are unaffected by this interpreter minimum.
+
+### Dependencies and security
+
+- Replace duplicated 2021 requirements snapshots with the project runtime requirements and current test/dev tooling. Bound the HTTPX/Tenacity API ranges and enforce security floors for AnyIO, certifi, HTTPcore and IDNA.
+- Test Python 3.11, 3.12 and 3.14; verify HTTPX 0.27.0 / Tenacity 8.5.0 lower bounds on Python 3.12.
+- Add a failing pip-audit runtime check on PRs, pushes, a weekly schedule and manual dispatch, without vulnerability exclusions. Group Dependabot updates weekly and document the explicit activation required on forks.
+- Keep package version 0.1.1 until a separately reviewed release bump; these changes are not delivered to PyPI consumers by merging alone.
 
 ## [v0.1.1](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/releases/tag/v0.1.1) — Module boiler status snapshots (2026-11-11)
 

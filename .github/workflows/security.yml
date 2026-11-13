@@ -1,0 +1,36 @@
+name: Dependency security
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  schedule:
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runtime-audit:
+    name: Audit resolved runtime dependencies
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - name: Install runtime in an isolated environment
+        run: |
+          python -m venv "$RUNNER_TEMP/vsmart-runtime"
+          "$RUNNER_TEMP/vsmart-runtime/bin/python" -m pip install --upgrade pip
+          "$RUNNER_TEMP/vsmart-runtime/bin/python" -m pip install .
+      - name: Install audit tooling separately
+        run: |
+          python -m venv "$RUNNER_TEMP/vsmart-audit"
+          "$RUNNER_TEMP/vsmart-audit/bin/python" -m pip install -r requirements-audit.txt
+      - name: Audit without vulnerability exclusions
+        run: |
+          SITE_PACKAGES=$("$RUNNER_TEMP/vsmart-runtime/bin/python" -c 'import sysconfig; print(sysconfig.get_path("purelib"))')
+          "$RUNNER_TEMP/vsmart-audit/bin/python" -m pip_audit --path "$SITE_PACKAGES"

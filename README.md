@@ -41,7 +41,9 @@ from vaillant_netatmo_api.thermostat import ThermostatClient
 
 Do not install `vaillant-netatmo-api` and `vaillant-netatmo-api-ng` in the same environment; they provide the same import package and may overwrite each other's files.
 
-Requires Python 3.8+ and the `httpx` and `tenacity` dependencies.
+Published **0.1.1** requires Python 3.8+. The **unreleased development branch requires Python 3.11+** and raises HTTP dependency minimums; those changes require a new package release before consumers receive them.
+
+For development, use Python 3.11+ and run `python -m pip install -r requirements-dev.txt` from the repository root. CI tests Python 3.11, 3.12 and 3.14, including HTTPX 0.27.0 / Tenacity 8.5.0 minimums on Python 3.12. See [dependency maintenance and security](SECURITY.md) for audit scope and update procedures.
 
 ## API usage
 

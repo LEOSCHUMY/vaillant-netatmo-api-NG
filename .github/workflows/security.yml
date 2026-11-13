@@ -30,7 +30,21 @@ jobs:
         run: |
           python -m venv "$RUNNER_TEMP/vsmart-audit"
           "$RUNNER_TEMP/vsmart-audit/bin/python" -m pip install -r requirements-audit.txt
+      - name: Snapshot installed external runtime dependencies
+        run: |
+          "$RUNNER_TEMP/vsmart-runtime/bin/python" - "$RUNNER_TEMP/runtime-dependencies.txt" <<'PY'
+          from importlib.metadata import distributions
+          from pathlib import Path
+          import sys
+
+          requirements = sorted(
+              f"{dist.metadata['Name']}=={dist.version}"
+              for dist in distributions()
+              if dist.metadata["Name"].lower().replace("_", "-") != "vaillant-netatmo-api-ng"
+          )
+          Path(sys.argv[1]).write_text("\n".join(requirements) + "\n", encoding="utf-8")
+          print(f"Auditing {len(requirements)} installed external dependencies")
+          PY
       - name: Audit without vulnerability exclusions
         run: |
-          SITE_PACKAGES=$("$RUNNER_TEMP/vsmart-runtime/bin/python" -c 'import sysconfig; print(sysconfig.get_path("purelib"))')
-          "$RUNNER_TEMP/vsmart-audit/bin/python" -m pip_audit --path "$SITE_PACKAGES"
+          "$RUNNER_TEMP/vsmart-audit/bin/python" -m pip_audit --strict --no-deps --disable-pip -r "$RUNNER_TEMP/runtime-dependencies.txt"

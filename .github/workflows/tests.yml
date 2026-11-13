@@ -54,7 +54,7 @@ jobs:
 
           project = tomllib.loads(pathlib.Path("pyproject.toml").read_text())["project"]
           assert project["name"] == "vaillant-netatmo-api-ng"
-          assert project["version"] == "0.1.1"
+          assert project["version"] == "0.2.0"
           print(f"Validated {project['name']}=={project['version']}")
           PY
       - name: Build wheel and source distribution

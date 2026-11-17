@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-No changes yet.
+### Project support
+
+- Add an optional Ko-fi support link and badge to the README while keeping contributions, testing and bug reports welcome.
 
 ## 0.2.0 — Dependency security and supported Python baseline
 

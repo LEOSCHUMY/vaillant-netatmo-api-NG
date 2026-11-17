@@ -1,6 +1,7 @@
 # vaillant-netatmo-api-ng
 
 [![Tests](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/actions/workflows/tests.yml/badge.svg)](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/actions/workflows/tests.yml)
+[![Support development on Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20development-FF5E5B?logo=ko-fi&logoColor=white&style=for-the-badge)](https://ko-fi.com/LEOSCHUMY)
 
 ## About this fork
 
@@ -183,6 +184,12 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 ```
 
 Similar hooks which represent some kind of application context should be used when integrating this library into a different application (Flask, Django or similar).
+
+## Support development
+
+If this project is useful to you, you can optionally support maintenance of the NG fork with a tip on [Ko-fi](https://ko-fi.com/LEOSCHUMY).
+
+Contributions, testing and bug reports are equally welcome.
 
 ## Acknowledgements
 

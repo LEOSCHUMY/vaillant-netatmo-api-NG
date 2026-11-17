@@ -2,15 +2,26 @@
 
 ## [Unreleased]
 
-### Next-Gen namespace isolation
+No changes yet.
 
-- Prepare development candidate `0.3.0.dev0` with Python imports under `vaillant_netatmo_api_ng`, leaving upstream `vaillant_netatmo_api` untouched. This is a breaking import change; distribution name and API behavior remain the same. Published 0.2.0 is unchanged.
-- Test the installed candidate alongside upstream 0.13.1 in both import orders and verify that their installed file lists do not overlap. Both integration-domain variants will use this one NG library line. No library is published by this change.
-- Explain NG as Next-Gen in the README title and introduction.
+## 0.3.0 — Isolated Next-Gen import namespace
 
-### Project support
+### Breaking compatibility change
 
-- Add an optional Ko-fi support link and badge to the README while keeping contributions, testing and bug reports welcome.
+- Move Python imports to `vaillant_netatmo_api_ng`, leaving original `vaillant_netatmo_api` untouched. The distribution name remains `vaillant-netatmo-api-ng`; no old-name alias is installed. Existing callers must update their imports.
+- Existing NG integrations requiring 0.2.0 or earlier must update component code and the library requirement together. Upgrading the library alone would break their old imports. Both new-domain and compatible-domain NG integrations use this one library release.
+- Keep the ten runtime Python files unchanged from 0.2.0 apart from their package location. The 0.3.0 version preparation also leaves the field-tested 0.3.0.dev0 runtime files unchanged. Dependency bounds and Python 3.11+ minimum are unchanged from 0.2.0.
+
+### Packaging and validation
+
+- Restrict package discovery to the isolated NG namespace; update tests, examples and mock targets. Verify that built NG and original 0.13.1 distributions own disjoint files and retain separate client/token/exception classes in both import orders on Python 3.11, 3.12 and 3.14.
+- Retain the regression matrix, package/twine validation and strict external-dependency audit. Update GitHub Actions and the development-only python-dotenv requirement since 0.2.0.
+- Initial HA 2026.11.1 / Python 3.14.10 coexistence was observed with the development candidate: both original and new-domain NG climates available, 19 entities and 2 distinct devices each, separate libraries and original files unchanged. Prolonged polling/new transitions were skipped; every-control, compatible-upgrade and rollback validation are not established by that test.
+
+### Documentation and project support
+
+- Explain NG as Next-Gen in the README title and introduction; distinguish distribution names, new imports and older releases.
+- Add the optional Ko-fi badge and support link while keeping contributions, testing and bug reports welcome.
 
 ## 0.2.0 — Dependency security and supported Python baseline
 

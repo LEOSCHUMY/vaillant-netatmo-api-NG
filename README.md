@@ -3,8 +3,8 @@
 [![Tests](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/actions/workflows/tests.yml/badge.svg)](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/actions/workflows/tests.yml)
 [![Support development on Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20development-FF5E5B?logo=ko-fi&logoColor=white&style=for-the-badge)](https://ko-fi.com/LEOSCHUMY)
 
-> [!WARNING]
-> **Unreleased namespace work on branch `hacs`.** This development candidate is `0.3.0.dev0`; it is not published on PyPI. Published `0.2.0` and earlier still use the original import namespace. Do not install this branch over a working Home Assistant installation.
+> [!IMPORTANT]
+> **Breaking import change in 0.3.0:** use `vaillant_netatmo_api_ng` instead of `vaillant_netatmo_api`. The distribution name remains `vaillant-netatmo-api-ng`. Existing NG integrations built for library 0.2.0 or earlier must update their component imports and library requirement together; do not upgrade their library alone.
 
 ## About this fork
 
@@ -29,26 +29,27 @@ This fork is also independent of the original project's maintainer. See [LICENSE
 
 ## Installation
 
-The 0.3 development candidate is **not on PyPI**. For a published version, use [PyPI](https://pypi.org/project/vaillant-netatmo-api-ng/) or [GitHub Releases](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/releases), and read the README at that release tag. Published [v0.2.0 documentation](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/blob/v0.2.0/README.md) uses the older imports.
-
-The examples below target the new import namespace. Test a reviewed local checkout only in an isolated environment:
+Choose a **published version** from [PyPI](https://pypi.org/project/vaillant-netatmo-api-ng/) or [GitHub Releases](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/releases), and read the documentation at that release tag. Merging release preparation does not publish the package; the command below requires version 0.3.0 to be available on PyPI.
 
 ```bash
-python -m venv .venv
-. .venv/bin/activate
-python -m pip install .
+python -m pip install 'vaillant-netatmo-api-ng==0.3.0'
 ```
 
-
-The **distribution name** remains `vaillant-netatmo-api-ng`. This unreleased 0.3 development line uses the separate Python **import name** `vaillant_netatmo_api_ng`:
+The **distribution name** is `vaillant-netatmo-api-ng`; version **0.3.0 and later** uses the separate Python **import name** `vaillant_netatmo_api_ng`:
 
 ```python
 from vaillant_netatmo_api_ng.thermostat import ThermostatClient
 ```
 
-**Breaking import change:** callers adopting the 0.3 development line must update imports to `vaillant_netatmo_api_ng`. No alias is installed under upstream `vaillant_netatmo_api`. Published NG 0.2.0 and earlier still share that upstream import namespace and must not be installed alongside the original distribution. A clean test environment can install original `vaillant-netatmo-api==0.13.1` alongside the new candidate; namespace isolation alone does not prove full Home Assistant integration coexistence.
+No alias is installed under upstream `vaillant_netatmo_api`. NG **0.2.0 and earlier** still provides that older import namespace and must not be installed alongside the original distribution; use its [v0.2.0 documentation](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/blob/v0.2.0/README.md) for those releases.
 
-Version **0.2.0 requires Python 3.11+** and raises HTTP dependency minimums. Earlier **0.1.1** supports Python 3.8+. Select the release matching your interpreter; merging source changes does not publish them to PyPI.
+Both the new-domain HACS integration and the compatible manual integration use the **same** new NG library release. Existing older NG component code must be updated together with its requirement before using 0.3.0. Two versions of the NG distribution are not separate library installations. This differs from the original `vaillant-netatmo-api==0.13.1`, whose distribution and import namespace are separate from NG 0.3.0.
+
+The built NG package and original 0.13.1 are checked for disjoint installed files and separate classes in both import orders on Python 3.11, 3.12 and 3.14. Initial Home Assistant coexistence was also observed on a secondary HA 2026.11.1 / Python 3.14.10 system with the 0.3.0.dev0 candidate: original integration 0.11.2 and new-domain NG configured together, both climates available, 19 entities and 2 distinct devices each, separate libraries and original files unchanged. The stable version preparation changes no runtime Python files from that candidate.
+
+That observation does not validate sustained polling, every control, a new ON/OFF cycle, a compatible-domain upgrade or rollback. See the integration's [coexistence report](https://github.com/LEOSCHUMY/home-assistant-vaillant-vsmart-NG/blob/hacs/docs/COEXISTENCE_TEST.md) for scope.
+
+Python **3.11+** is required, as in 0.2.0. Release **0.1.1** supports Python 3.8+. The Home Assistant integration minimum remains HA 2024.5; select versions appropriate to your environment.
 
 For development, use Python 3.11+ and run `python -m pip install -r requirements-dev.txt` from the repository root. CI tests Python 3.11, 3.12 and 3.14, including HTTPX 0.27.0 / Tenacity 8.5.0 minimums on Python 3.12. See [dependency maintenance and security](SECURITY.md) for audit scope and update procedures.
 

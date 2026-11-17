@@ -10,8 +10,12 @@ Tests install requirements-test.txt and run python -m pytest. The Python 3.12 CI
 
 Dependabot groups Python and GitHub Actions version updates weekly. Every update requires review and relevant tests; there is no automatic merge or release. On a GitHub fork, the owner must explicitly enable Dependabot version updates under Settings > Advanced Security (wording may vary). Also enable the dependency graph, alerts and security updates. The configuration file alone does not prove these services are active.
 
-To repeat an audit, create separate runtime and audit virtual environments, install the project into the former and requirements-audit.txt into the latter, then run the latter's python -m pip_audit --path <runtime-site-packages>. Do not install the scanner into a production HA container.
+To repeat an audit, follow the versioned security workflow: create separate runtime/audit environments, install the project into the former, export every installed external distribution including pip (excluding only this local project), then audit that pinned snapshot with --strict --no-deps --disable-pip. Do not install the scanner into a production HA container.
 
-## Unreleased Next-Gen import namespace
+## Next-Gen import namespace (0.3.0+)
 
-The `hacs` work branch prepares `0.3.0.dev0` under `vaillant_netatmo_api_ng`. Published NG 0.2.0 still provides upstream `vaillant_netatmo_api` and must not be installed alongside the original distribution. CI checks that the built new candidate and original 0.13.1 own disjoint files and retain separate client/token/exception classes in both import orders. This is package isolation evidence, not a real-account or complete Home Assistant coexistence test. Both new-domain and compatible-domain NG integrations will use the same new library.
+Version 0.3.0 uses `vaillant_netatmo_api_ng`. NG 0.2.0 and earlier provides upstream `vaillant_netatmo_api` and must not be installed alongside the original distribution. The version preparation changes no runtime Python files from the field-tested 0.3.0.dev0 candidate.
+
+CI checks that built NG and original 0.13.1 own disjoint files and retain separate client/token/exception classes in both import orders. A secondary HA 2026.11.1 setup also demonstrated initial separate configuration and registries, with original files unchanged. These observations do not validate sustained authentication/updates, every control, compatible upgrades or rollback.
+
+Both new-domain and compatible-domain integrations use the same new library. Older NG component code must move to the new imports together with its dependency requirement; a library-only upgrade is incompatible. Stable publication remains an explicit manual step after review.

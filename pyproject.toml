@@ -6,11 +6,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vaillant-netatmo-api-ng"
-version = "0.2.0"
+version = "0.3.0.dev0"
 authors = [
     { name="Mislav Mandaric" },
 ]
-description = "Community fork for managing Vaillant thermostats using Netatmo-backed APIs."
+description = "Next-Gen community fork for managing Vaillant thermostats using Netatmo-backed APIs."
 readme = "README.md"
 maintainers = [
     { name="LEOSCHUMY" },
@@ -46,3 +46,7 @@ major_on_zero = false
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["vaillant_netatmo_api_ng*"]

@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Next-Gen namespace isolation
+
+- Prepare development candidate `0.3.0.dev0` with Python imports under `vaillant_netatmo_api_ng`, leaving upstream `vaillant_netatmo_api` untouched. This is a breaking import change; distribution name and API behavior remain the same. Published 0.2.0 is unchanged.
+- Test the installed candidate alongside upstream 0.13.1 in both import orders and verify that their installed file lists do not overlap. Both integration-domain variants will use this one NG library line. No library is published by this change.
+- Explain NG as Next-Gen in the README title and introduction.
+
 ### Project support
 
 - Add an optional Ko-fi support link and badge to the README while keeping contributions, testing and bug reports welcome.

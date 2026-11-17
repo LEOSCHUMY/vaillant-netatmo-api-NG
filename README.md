@@ -1,11 +1,14 @@
-# vaillant-netatmo-api-ng
+# vaillant-netatmo-api-ng — Next-Gen Vaillant thermostat API
 
 [![Tests](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/actions/workflows/tests.yml/badge.svg)](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/actions/workflows/tests.yml)
 [![Support development on Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20development-FF5E5B?logo=ko-fi&logoColor=white&style=for-the-badge)](https://ko-fi.com/LEOSCHUMY)
 
+> [!WARNING]
+> **Unreleased namespace work on branch `hacs`.** This development candidate is `0.3.0.dev0`; it is not published on PyPI. Published `0.2.0` and earlier still use the original import namespace. Do not install this branch over a working Home Assistant installation.
+
 ## About this fork
 
-**vaillant-netatmo-api-ng** is a community-maintained fork of [Mislav Mandarić's vaillant-netatmo-api](https://github.com/MislavMandaric/vaillant-netatmo-api), a Python library for accessing Vaillant vSMART/eRELAX thermostats through Netatmo-backed APIs.
+**vaillant-netatmo-api-ng** (NG means **Next-Gen**) is a community-maintained fork of [Mislav Mandarić's vaillant-netatmo-api](https://github.com/MislavMandaric/vaillant-netatmo-api), a Python library for accessing Vaillant vSMART/eRELAX thermostats through Netatmo-backed APIs.
 
 This fork starts its **own version series at 0.1.0**. Version numbers do **not** track the original project's releases. NG adds read-only room temperatures and, since `0.1.1`, module boiler status from Vaillant's `homestatus` endpoint, while preserving the existing thermostat data and control APIs.
 
@@ -26,20 +29,24 @@ This fork is also independent of the original project's maintainer. See [LICENSE
 
 ## Installation
 
-Choose a published NG package version from [PyPI](https://pypi.org/project/vaillant-netatmo-api-ng/) or [GitHub Releases](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/releases). To install the latest published version compatible with your Python interpreter:
+The 0.3 development candidate is **not on PyPI**. For a published version, use [PyPI](https://pypi.org/project/vaillant-netatmo-api-ng/) or [GitHub Releases](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/releases), and read the README at that release tag. Published [v0.2.0 documentation](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/blob/v0.2.0/README.md) uses the older imports.
+
+The examples below target the new import namespace. Test a reviewed local checkout only in an isolated environment:
 
 ```bash
-pip install vaillant-netatmo-api-ng
+python -m venv .venv
+. .venv/bin/activate
+python -m pip install .
 ```
 
 
-The **distribution name** is `vaillant-netatmo-api-ng`, but the Python **import name** intentionally remains `vaillant_netatmo_api` for compatibility:
+The **distribution name** remains `vaillant-netatmo-api-ng`. This unreleased 0.3 development line uses the separate Python **import name** `vaillant_netatmo_api_ng`:
 
 ```python
-from vaillant_netatmo_api.thermostat import ThermostatClient
+from vaillant_netatmo_api_ng.thermostat import ThermostatClient
 ```
 
-Do not install `vaillant-netatmo-api` and `vaillant-netatmo-api-ng` in the same environment; they provide the same import package and may overwrite each other's files.
+**Breaking import change:** callers adopting the 0.3 development line must update imports to `vaillant_netatmo_api_ng`. No alias is installed under upstream `vaillant_netatmo_api`. Published NG 0.2.0 and earlier still share that upstream import namespace and must not be installed alongside the original distribution. A clean test environment can install original `vaillant-netatmo-api==0.13.1` alongside the new candidate; namespace isolation alone does not prove full Home Assistant integration coexistence.
 
 Version **0.2.0 requires Python 3.11+** and raises HTTP dependency minimums. Earlier **0.1.1** supports Python 3.8+. Select the release matching your interpreter; merging source changes does not publish them to PyPI.
 
@@ -98,7 +105,7 @@ Since Vaillant uses Resource Owner Password Credentials Grant, there is only one
 * `async_token`: getting a bearer token and storing it in the token store
 
 ```python
-from vaillant_netatmo_api import auth_client
+from vaillant_netatmo_api_ng import auth_client
 
 CLIENT_ID = ""
 CLIENT_SECRET = ""
@@ -127,7 +134,7 @@ The existing `ThermostatClient` methods include:
 * `async_switch_schedule`: changing active schedule for a device and module
 
 ```python
-from vaillant_netatmo_api import thermostat_client, SystemMode, Token
+from vaillant_netatmo_api_ng import thermostat_client, SystemMode, Token
 
 CLIENT_ID = ""
 CLIENT_SECRET = ""

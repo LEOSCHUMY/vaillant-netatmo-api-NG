@@ -3,7 +3,7 @@ import pytest
 
 from datetime import timedelta
 
-from vaillant_netatmo_api.errors import ApiException, NetworkException, RequestBackoffException, RequestClientException, RequestException, RequestServerException, RequestUnauthorizedException, client_error_handler, NetworkTimeoutException
+from vaillant_netatmo_api_ng.errors import ApiException, NetworkException, RequestBackoffException, RequestClientException, RequestException, RequestServerException, RequestUnauthorizedException, client_error_handler, NetworkTimeoutException
 
 
 @pytest.mark.asyncio

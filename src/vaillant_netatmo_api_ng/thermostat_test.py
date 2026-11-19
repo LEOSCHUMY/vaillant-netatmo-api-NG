@@ -7,9 +7,9 @@ from datetime import datetime, timedelta
 from pytest_mock import MockerFixture
 from respx import MockRouter
 
-from vaillant_netatmo_api.errors import RequestClientException, UnsuportedArgumentsException
-from vaillant_netatmo_api.thermostat import Device, MeasurementItem, MeasurementScale, MeasurementType, SetpointMode, SystemMode, TimeSlot, Zone, thermostat_client
-from vaillant_netatmo_api.token import Token
+from vaillant_netatmo_api_ng.errors import RequestClientException, UnsuportedArgumentsException
+from vaillant_netatmo_api_ng.thermostat import Device, MeasurementItem, MeasurementScale, MeasurementType, SetpointMode, SystemMode, TimeSlot, Zone, thermostat_client
+from vaillant_netatmo_api_ng.token import Token
 
 token = Token({
     "access_token": "12345",
@@ -403,7 +403,7 @@ class TestThermostat:
 
 def test_log_response_timestamp_fields_logs_only_timestamp_fields(caplog):
     """Timestamp diagnostics must not expose device identifiers or names."""
-    from vaillant_netatmo_api.thermostat import _log_response_timestamp_fields
+    from vaillant_netatmo_api_ng.thermostat import _log_response_timestamp_fields
 
     response_fragment = {
         "_id": "private-device-id",
@@ -414,7 +414,7 @@ def test_log_response_timestamp_fields_logs_only_timestamp_fields(caplog):
         },
     }
 
-    with caplog.at_level(logging.DEBUG, logger="vaillant_netatmo_api.thermostat"):
+    with caplog.at_level(logging.DEBUG, logger="vaillant_netatmo_api_ng.thermostat"):
         _log_response_timestamp_fields(response_fragment, "device[0]")
 
     assert "device[0].measured.last_update=1667636447" in caplog.text

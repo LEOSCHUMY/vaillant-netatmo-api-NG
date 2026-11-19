@@ -4,7 +4,7 @@ on:
   push:
     branches: [ master, "diagnostic/**" ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, hacs ]
   workflow_dispatch:
 
 permissions:
@@ -54,10 +54,31 @@ jobs:
 
           project = tomllib.loads(pathlib.Path("pyproject.toml").read_text())["project"]
           assert project["name"] == "vaillant-netatmo-api-ng"
-          assert project["version"] == "0.2.0"
+          assert project["version"] == "0.3.0"
           print(f"Validated {project['name']}=={project['version']}")
           PY
       - name: Build wheel and source distribution
         run: python -m build
       - name: Check distribution metadata
         run: python -m twine check dist/*
+
+  namespace-coexistence:
+    name: Installed namespace coexistence (${{ matrix.python }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.12", "3.14"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install original and built candidate together
+        run: |
+          python -m venv "$RUNNER_TEMP/vsmart-coexistence"
+          "$RUNNER_TEMP/vsmart-coexistence/bin/python" -m pip install --upgrade pip
+          "$RUNNER_TEMP/vsmart-coexistence/bin/python" -m pip install vaillant-netatmo-api==0.13.1 .
+          "$RUNNER_TEMP/vsmart-coexistence/bin/python" -m pip check
+      - name: Verify file ownership and both import orders
+        run: '"$RUNNER_TEMP/vsmart-coexistence/bin/python" scripts/check_namespace_coexistence.py'

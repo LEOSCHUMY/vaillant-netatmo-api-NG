@@ -1,6 +1,6 @@
 """Regression tests for parsed thermostat measurements."""
 
-from src.vaillant_netatmo_api.thermostat import Device
+from vaillant_netatmo_api_ng.thermostat import Device
 
 
 def test_module_preserves_measured_timestamp():

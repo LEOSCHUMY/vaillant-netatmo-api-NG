@@ -3,10 +3,10 @@ import pytest
 
 from respx import MockRouter
 
-from vaillant_netatmo_api.errors import RequestClientException
-from vaillant_netatmo_api.thermostat import thermostat_client
-from vaillant_netatmo_api.token import Token
-from vaillant_netatmo_api.home import Home
+from vaillant_netatmo_api_ng.errors import RequestClientException
+from vaillant_netatmo_api_ng.thermostat import thermostat_client
+from vaillant_netatmo_api_ng.token import Token
+from vaillant_netatmo_api_ng.home import Home
 
 token = Token({
     "access_token": "12345",

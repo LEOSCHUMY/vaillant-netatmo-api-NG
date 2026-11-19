@@ -1,6 +1,6 @@
 """Ensure homesdata retains the room-to-thermostat mapping."""
 
-from vaillant_netatmo_api.home import Home, Room
+from vaillant_netatmo_api_ng.home import Home, Room
 
 
 def test_room_module_ids_are_preserved():

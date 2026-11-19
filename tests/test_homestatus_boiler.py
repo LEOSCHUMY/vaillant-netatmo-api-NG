@@ -6,11 +6,11 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from vaillant_netatmo_api.homestatus import (
+from vaillant_netatmo_api_ng.homestatus import (
     InvalidHomeStatusResponse,
     parse_home_status_snapshot,
 )
-from vaillant_netatmo_api.thermostat import ThermostatClient
+from vaillant_netatmo_api_ng.thermostat import ThermostatClient
 
 
 def response(modules, home_id="home", wrapped=False):

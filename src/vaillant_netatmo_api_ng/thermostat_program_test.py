@@ -4,7 +4,7 @@ from datetime import datetime
 
 from pytest_mock import MockerFixture
 
-from vaillant_netatmo_api.thermostat import Program
+from vaillant_netatmo_api_ng.thermostat import Program
 
 @pytest.mark.parametrize(
     "current_time,expected_active_zone_id", 
@@ -86,7 +86,7 @@ from vaillant_netatmo_api.thermostat import Program
 @pytest.mark.asyncio
 class TestProgramForZones:
     async def test_get_active_zone__timetable_with_three_slots_per_day__returns_correct_index_around_bounderies(self, current_time: datetime, expected_active_zone_id: int, mocker: MockerFixture):
-        mocker.patch("vaillant_netatmo_api.thermostat.now", return_value=current_time)
+        mocker.patch("vaillant_netatmo_api_ng.thermostat.now", return_value=current_time)
 
         program = Program(
             zones=[
@@ -128,7 +128,7 @@ class TestProgramForTimeslots:
     async def test_get_timeslots_for_today__timetable_with_alternating_zones__returns_monday_without_padding(self, mocker: MockerFixture):
         monday = datetime(2021, 11, 22, 1, 0)
 
-        mocker.patch("vaillant_netatmo_api.thermostat.now", return_value=monday)
+        mocker.patch("vaillant_netatmo_api_ng.thermostat.now", return_value=monday)
 
         program = Program(
             timetable=[
@@ -155,7 +155,7 @@ class TestProgramForTimeslots:
     async def test_get_timeslots_for_today__timetable_with_alternating_zones__returns_other_days_with_padding(self, mocker: MockerFixture):
         tuesday = datetime(2021, 11, 23, 1, 0)
 
-        mocker.patch("vaillant_netatmo_api.thermostat.now", return_value=tuesday)
+        mocker.patch("vaillant_netatmo_api_ng.thermostat.now", return_value=tuesday)
 
         program = Program(
             timetable=[

@@ -6,7 +6,7 @@ import os
 from httpx import AsyncClient
 from dotenv import load_dotenv
 
-from src.vaillant_netatmo_api import AuthClient, ThermostatClient, TokenStore, Token
+from vaillant_netatmo_api_ng import AuthClient, ThermostatClient, TokenStore, Token
 
 load_dotenv()
 

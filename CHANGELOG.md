@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-No changes yet.
+### Fixes
+
+- `async_set_home_data` now sends `therm_mode` inside the `home` object of `api/sethomedata`. At the top level the cloud answered `ok` but ignored it, so away, schedule and frost-guard (`hg`) mode changes had no effect. The method signature is unchanged.
 
 ## 0.3.0 — Isolated Next-Gen import namespace
 

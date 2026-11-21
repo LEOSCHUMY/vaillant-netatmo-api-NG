@@ -187,7 +187,9 @@ class ThermostatClient(BaseClient):
         }
 
         if therm_mode is not None:
-            data["therm_mode"] = therm_mode.value
+            # The cloud only applies therm_mode inside "home"; at the top level
+            # it answers "ok" but ignores the mode.
+            data["home"]["therm_mode"] = therm_mode.value
 
         body = await self._post(
             path,

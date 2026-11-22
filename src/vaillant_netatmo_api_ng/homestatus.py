@@ -16,12 +16,19 @@ class RoomStatus:
     """Current reading for one logical Vaillant room.
 
     The endpoint does not supply a measurement timestamp for this temperature.
+
+    setpoint_mode is the room's raw therm_setpoint_mode (for example "home"
+    for the schedule or "manual"), and setpoint_end_time the raw Unix time at
+    which a manual setpoint ends. Both reflect setstate writes at once, unlike
+    getthermostatsdata. Missing or malformed values are None.
     """
 
     room_id: str
     measured_temperature: float | None
     setpoint_temperature: float | None
     reachable: bool | None
+    setpoint_mode: str | None = None
+    setpoint_end_time: int | None = None
 
 
 class InvalidHomeStatusResponse(ValueError):
@@ -117,13 +124,29 @@ def parse_home_status(response: dict) -> dict[str, RoomStatus]:
         if reachable is not None and not isinstance(reachable, bool):
             raise InvalidHomeStatusResponse("Invalid room reachability")
 
-        status = RoomStatus(room_id, temp, setpoint, reachable)
+        status = RoomStatus(
+            room_id,
+            temp,
+            setpoint,
+            reachable,
+            _setpoint_mode(raw_room.get("therm_setpoint_mode")),
+            _end_time(raw_room.get("therm_setpoint_end_time")),
+        )
         previous = result.get(room_id)
         if previous is not None and previous != status:
             raise InvalidHomeStatusResponse("Conflicting duplicate room records")
         result[room_id] = status
 
     return result
+
+
+def _setpoint_mode(value: object) -> str | None:
+    # Additive field: an unexpected value must not reject the room's readings.
+    return value if isinstance(value, str) and value else None
+
+
+def _end_time(value: object) -> int | None:
+    return value if isinstance(value, int) and not isinstance(value, bool) else None
 
 
 def _temperature(value: object) -> float | None:

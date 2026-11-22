@@ -1,3 +1,6 @@
+> [!WARNING]
+> **Secondary field-test candidate 0.4.0.dev0, not published on PyPI.** This temporary branch changes package identity for a pinned local-wheel test. It is not a stable release or an instruction to update a working installation. The stable library remains v0.3.0.
+
 # vaillant-netatmo-api-ng — Next-Gen Vaillant thermostat API
 
 [![Tests](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/actions/workflows/tests.yml/badge.svg)](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/actions/workflows/tests.yml)

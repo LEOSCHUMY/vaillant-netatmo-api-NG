@@ -7,6 +7,7 @@ import pytest
 
 from vaillant_netatmo_api_ng.homestatus import (
     InvalidHomeStatusResponse,
+    RoomStatus,
     parse_home_status,
 )
 from vaillant_netatmo_api_ng.thermostat import ThermostatClient
@@ -92,3 +93,47 @@ def test_client_rejects_empty_home_id_before_network():
             await client.async_get_home_status("")
         client._post.assert_not_awaited()
     asyncio.run(check())
+
+
+def test_setpoint_mode_and_end_time_are_exposed():
+    """Recorded from a live homestatus response right after a manual setstate."""
+    raw = room(setpoint=16.5)
+    raw["therm_setpoint_mode"] = "manual"
+    raw["therm_setpoint_end_time"] = 1795350676
+    result = parse_home_status(response([raw, dict(raw)]))
+    assert result["room-1"].setpoint_mode == "manual"
+    assert result["room-1"].setpoint_end_time == 1795350676
+
+
+def test_schedule_mode_has_no_end_time():
+    raw = room(setpoint=16.0)
+    raw["therm_setpoint_mode"] = "home"
+    result = parse_home_status(response([raw]))
+    assert result["room-1"].setpoint_mode == "home"
+    assert result["room-1"].setpoint_end_time is None
+
+
+@pytest.mark.parametrize("mode", [None, "", 3, True, ["manual"]])
+@pytest.mark.parametrize("end", [None, "1795350676", True, 1.5])
+def test_malformed_mode_or_end_time_is_none_and_keeps_readings(mode, end):
+    raw = room()
+    raw["therm_setpoint_mode"] = mode
+    raw["therm_setpoint_end_time"] = end
+    result = parse_home_status(response([raw]))
+    assert result["room-1"].setpoint_mode is None
+    assert result["room-1"].setpoint_end_time is None
+    assert result["room-1"].measured_temperature == 19.5
+
+
+def test_conflicting_duplicate_modes_rejected():
+    first, second = room(), room()
+    first["therm_setpoint_mode"] = "manual"
+    second["therm_setpoint_mode"] = "home"
+    with pytest.raises(InvalidHomeStatusResponse, match="Conflicting"):
+        parse_home_status(response([first, second]))
+
+
+def test_room_status_positional_construction_is_unchanged():
+    status = RoomStatus("room-1", 19.5, 20.0, True)
+    assert status.setpoint_mode is None
+    assert status.setpoint_end_time is None

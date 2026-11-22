@@ -6,6 +6,9 @@
 
 - Expose each room's `therm_setpoint_mode` and `therm_setpoint_end_time` from `homestatus` as `RoomStatus.setpoint_mode` and `RoomStatus.setpoint_end_time`. Both are new keyword fields with a `None` default, so existing positional construction keeps working. Missing or malformed values become `None` and never reject the room's other readings.
 - Why: on 2026-11-22, on one vSMART installation, `homestatus` reported a `setstate` write (manual 16.5 °C, then back to schedule) in a refresh 0.4 s after the write, while `getthermostatsdata` still returned the previous state at that moment and caught up within 12 s. Callers can now show setpoint mode and target without that lag. One installation; not a general latency guarantee.
+### Fixes
+
+- `async_set_home_data` now sends `therm_mode` inside the `home` object of `api/sethomedata`. At the top level the cloud answered `ok` but ignored it, so away, schedule and frost-guard (`hg`) mode changes had no effect. The method signature is unchanged.
 
 ## 0.3.0 — Isolated Next-Gen import namespace
 

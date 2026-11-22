@@ -19,8 +19,9 @@ class RoomStatus:
 
     setpoint_mode is the room's raw therm_setpoint_mode (for example "home"
     for the schedule or "manual"), and setpoint_end_time the raw Unix time at
-    which a manual setpoint ends. Both reflect setstate writes at once, unlike
-    getthermostatsdata. Missing or malformed values are None.
+    which a manual setpoint ends. These are the values reported by homestatus;
+    how quickly the cloud reflects a command is not guaranteed.
+    Missing or malformed values are None.
     """
 
     room_id: str

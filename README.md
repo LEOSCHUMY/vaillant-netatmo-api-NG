@@ -29,10 +29,10 @@ This fork is also independent of the original project's maintainer. See [LICENSE
 
 ## Installation
 
-Choose a **published version** from [PyPI](https://pypi.org/project/vaillant-netatmo-api-ng/) or [GitHub Releases](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/releases), and read the documentation at that release tag. Merging release preparation does not publish the package; the command below requires version 0.3.0 to be available on PyPI.
+Choose a **published version** from [PyPI](https://pypi.org/project/vaillant-netatmo-api-ng/) or [GitHub Releases](https://github.com/LEOSCHUMY/vaillant-netatmo-api-NG/releases), and read the documentation at that release tag. Merging release preparation does not publish the package; the command below requires version 0.4.0 to be available on PyPI.
 
 ```bash
-python -m pip install 'vaillant-netatmo-api-ng==0.3.0'
+python -m pip install 'vaillant-netatmo-api-ng==0.4.0'
 ```
 
 The **distribution name** is `vaillant-netatmo-api-ng`; version **0.3.0 and later** uses the separate Python **import name** `vaillant_netatmo_api_ng`:
